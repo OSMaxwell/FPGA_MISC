@@ -23,6 +23,8 @@ use IEEE.STD_LOGIC_1164.ALL;
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 use IEEE.NUMERIC_STD.ALL;
+library work;
+use work.cpu_macros.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx primitives in this code.
@@ -44,7 +46,7 @@ end decode;
 architecture Behavioral of decode is
 
 -- Opcode | OP | W?
--- 0000 	ADD    Y
+-- 0000 	ADD    Y (USING FLAG: SIGNED/UNSIGNED)
 -- 0001 	SUB    Y
 -- 0010 	OR     Y 
 -- 0011 	XOR    Y
@@ -61,30 +63,24 @@ architecture Behavioral of decode is
 -- 1110 	RESERVED
 -- 1111 	RESERVED
 
-type selA is range 7 downto 5;
-type selB is range 4 downto 2;
-type selD is range 11 downto 9;
-type dataIMM is range 7 downto 0;
-type aluop is range 15 downto 12;
-
 begin
 	process (I_clk)
 	begin
 		if rising_edge(I_clk) and I_en ='1' then
 			--decode INPUT
-			O_selA <= I_dataInst(selA);
-			O_selB <= I_dataInst(selB);
-			O_selD <= I_dataInst(selD);
-			O_dataIMM <= I_dataInst(dataIMM) & I_dataInst(dataIMM); --concate with self to use directly by ALU
-			O_aluop <= I_dataInst(aluop) & I_dataInst(8); -- Include FLAG
+			O_selA <= I_dataInst(7 downto 5);
+			O_selB <= I_dataInst(4 downto 2);
+			O_selD <= I_dataInst(11 downto 9);
+			O_dataIMM <= I_dataInst(7 downto 0) & I_dataInst(7 downto 0); -- concate with self to use directly by ALU
+			O_aluop <= I_dataInst(15 downto 12) & I_dataInst(8); -- Include FLAG
 			
 			--Write control
-			case I_dataInst(aluop) is
-				when "0111" =>
+			case I_dataInst(15 downto 12) is
+				when OPCODE_WRITE =>
 					O_regDwe <= '0';
-				when "1100" =>
+				when OPCODE_JUMP =>
 					O_regDwe <= '0';
-				when "1101" => 
+				when OPCODE_JUMPEQ => 
 					O_regDwe <= '0';
 				when others => 
 					O_regDwe <= '1';

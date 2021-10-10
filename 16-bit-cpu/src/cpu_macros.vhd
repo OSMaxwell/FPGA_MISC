@@ -56,6 +56,12 @@ package cpu_macros is
 	constant CJF_BNZ: std_logic_vector(2 downto 0):= "100";
 	constant CJF_AGB: std_logic_vector(2 downto 0):= "101";
 	constant CJF_ALB: std_logic_vector(2 downto 0):= "110";
+	
+-- PC unit opcodes
+	constant PCU_OP_NOP: std_logic_vector(1 downto 0) := "00";
+	constant PCU_OP_INC : std_logic_vector(1 downto 0) := "01";
+	constant PCU_OP_ASSIGN : std_logic_vector(1 downto 0) := "10";
+	constant PCU_OP_RESET : std_logic_vector(1 downto 0) := "11";
 --
 -- Declare functions and procedure
 --
